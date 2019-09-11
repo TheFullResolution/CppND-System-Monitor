@@ -1,5 +1,6 @@
 #include <dirent.h>
 #include <unistd.h>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -70,7 +71,17 @@ vector<int> LinuxParser::Pids() {
 float LinuxParser::MemoryUtilization() { return 0.0; }
 
 // TODO: Read and return the system uptime
-long LinuxParser::UpTime() { return 0; }
+long LinuxParser::UpTime() { 
+  string line;
+  long upTime;
+  std::ifstream stream(kProcDirectory + kUptimeFilename);
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    linestream >> upTime;
+  }
+  return upTime;
+ }
 
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return 0; }
@@ -88,11 +99,32 @@ long LinuxParser::IdleJiffies() { return 0; }
 // TODO: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() { return {}; }
 
+int LinuxParser::GetProcesses(string process_key) {
+  string line, key;
+  int value;
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  if (stream.is_open()) {
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> key >> value) {
+        if (key == process_key) {
+          return value;
+        }
+      }
+    }
+  }
+  return value;
+}
+
 // TODO: Read and return the total number of processes
-int LinuxParser::TotalProcesses() { return Pids().size(); }
+int LinuxParser::TotalProcesses() {
+  return LinuxParser::GetProcesses("processes");
+}
 
 // TODO: Read and return the number of running processes
-int LinuxParser::RunningProcesses() { return 0; }
+int LinuxParser::RunningProcesses() {
+  return LinuxParser::GetProcesses("procs_running");
+}
 
 // TODO: Read and return the command associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
