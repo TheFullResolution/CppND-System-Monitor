@@ -5,27 +5,16 @@
 #include <regex>
 #include <string>
 
+#include "parser_helper.h"
+
 using std::string;
 using std::vector;
 
 namespace LinuxParser {
-// Paths
-const string kProcDirectory{"/proc/"};
-const string kCmdlineFilename{"/cmdline"};
-const string kCpuinfoFilename{"/cpuinfo"};
-const string kStatusFilename{"/status"};
-const string kStatFilename{"/stat"};
-const string kUptimeFilename{"/uptime"};
-const string kMeminfoFilename{"/meminfo"};
-const string kVersionFilename{"/version"};
-const string kOSPath{"/etc/os-release"};
-const string kPasswordPath{"/etc/passwd"};
-
 // System
 float MemoryUtilization();
 long UpTime();
 vector<int> Pids();
-int GetProcesses(string);
 int TotalProcesses();
 int RunningProcesses();
 string OperatingSystem();
