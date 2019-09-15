@@ -5,15 +5,15 @@
 #include <regex>
 #include <string>
 
-#include "parser_consts.h"
 #include "linux_parser.h"
+#include "parser_consts.h"
 
 using std::string;
 using std::vector;
 
 namespace ParserHelper {
 template <typename T>
-T GetSimpleValue(string &filter, string const &filename) {
+T GetSimpleValue(string const &filter, string const &filename) {
   string line, key;
   T value;
 

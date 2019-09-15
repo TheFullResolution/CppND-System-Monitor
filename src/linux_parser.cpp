@@ -1,12 +1,12 @@
 #include <dirent.h>
 #include <unistd.h>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <iostream>
 
-#include "parser_consts.h"
 #include "linux_parser.h"
+#include "parser_consts.h"
 #include "parser_helper.h"
 
 using std::stof;
@@ -41,7 +41,8 @@ string LinuxParser::OperatingSystem() {
 string LinuxParser::Kernel() {
   string os, version, kernel;
   string line;
-  std::ifstream stream(ParserConsts::kProcDirectory + ParserConsts::kVersionFilename);
+  std::ifstream stream(ParserConsts::kProcDirectory +
+                       ParserConsts::kVersionFilename);
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
@@ -71,11 +72,10 @@ vector<int> LinuxParser::Pids() {
 }
 
 float LinuxParser::MemoryUtilization() {
-  string memTotalString = "MemTotal:";
-  string memFreeString = "MemFree:";
-  float memTotal =
-      ParserHelper::GetSimpleValue<int>(memTotalString, ParserConsts::kMeminfoFilename);
-  float memFree = ParserHelper::GetSimpleValue<int>(memFreeString, ParserConsts::kMeminfoFilename);
+  float memTotal = ParserHelper::GetSimpleValue<int>(
+      ParserConsts::filterMemTotalString, ParserConsts::kMeminfoFilename);
+  float memFree = ParserHelper::GetSimpleValue<int>(
+      ParserConsts::filterMemFreeString, ParserConsts::kMeminfoFilename);
 
   float memory = (memTotal - memFree) / memTotal;
 
@@ -85,7 +85,8 @@ float LinuxParser::MemoryUtilization() {
 long LinuxParser::UpTime() {
   string line;
   long upTime;
-  std::ifstream stream(ParserConsts::kProcDirectory + ParserConsts::kUptimeFilename);
+  std::ifstream stream(ParserConsts::kProcDirectory +
+                       ParserConsts::kUptimeFilename);
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
@@ -111,14 +112,13 @@ long LinuxParser::IdleJiffies() { return 0; }
 vector<string> LinuxParser::CpuUtilization() { return {}; }
 
 int LinuxParser::TotalProcesses() {
-  string filter = "processes";
-  return ParserHelper::GetSimpleValue<int>(filter, ParserConsts::kStatFilename);
+  return ParserHelper::GetSimpleValue<int>(ParserConsts::filterProcesses,
+                                           ParserConsts::kStatFilename);
 }
 
 int LinuxParser::RunningProcesses() {
-  string filter = "procs_running";
-
-  return ParserHelper::GetSimpleValue<int>(filter, ParserConsts::kStatFilename);
+  return ParserHelper::GetSimpleValue<int>(ParserConsts::filterRunningProcesses,
+                                           ParserConsts::kStatFilename);
 }
 
 // TODO: Read and return the command associated with a process
