@@ -22,6 +22,8 @@ const string filterRunningProcesses("procs_running");
 const string filterMemTotalString("MemTotal:");
 const string filterMemFreeString("MemFree:");
 const string filterCpu("cpu");
+const string filterUID("Uid:");
+const string filterProcMem("VmSize:");
 
 }  // namespace ParserConsts
 

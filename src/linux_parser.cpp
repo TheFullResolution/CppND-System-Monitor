@@ -1,6 +1,4 @@
 #include <dirent.h>
-#include <unistd.h>
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -72,9 +70,9 @@ vector<int> LinuxParser::Pids() {
 }
 
 float LinuxParser::MemoryUtilization() {
-  float memTotal = ParserHelper::GetSimpleValue<int>(
+  float memTotal = ParserHelper::GetValueByKey<int>(
       ParserConsts::filterMemTotalString, ParserConsts::kMeminfoFilename);
-  float memFree = ParserHelper::GetSimpleValue<int>(
+  float memFree = ParserHelper::GetValueByKey<int>(
       ParserConsts::filterMemFreeString, ParserConsts::kMeminfoFilename);
 
   float memory = (memTotal - memFree) / memTotal;
@@ -84,14 +82,7 @@ float LinuxParser::MemoryUtilization() {
 
 long LinuxParser::UpTime() {
   string line;
-  long upTime;
-  std::ifstream stream(ParserConsts::kProcDirectory +
-                       ParserConsts::kUptimeFilename);
-  if (stream.is_open()) {
-    std::getline(stream, line);
-    std::istringstream linestream(line);
-    linestream >> upTime;
-  }
+  long upTime = ParserHelper::GetValue<long>(ParserConsts::kUptimeFilename);
   return upTime;
 }
 
@@ -108,35 +99,31 @@ long LinuxParser::ActiveJiffies() { return 0; }
 // TODO: Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() { return 0; }
 
-// TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { return {}; }
-
 int LinuxParser::TotalProcesses() {
-  return ParserHelper::GetSimpleValue<int>(ParserConsts::filterProcesses,
-                                           ParserConsts::kStatFilename);
+  return ParserHelper::GetValueByKey<int>(ParserConsts::filterProcesses,
+                                          ParserConsts::kStatFilename);
 }
 
 int LinuxParser::RunningProcesses() {
-  return ParserHelper::GetSimpleValue<int>(ParserConsts::filterRunningProcesses,
-                                           ParserConsts::kStatFilename);
+  return ParserHelper::GetValueByKey<int>(ParserConsts::filterRunningProcesses,
+                                          ParserConsts::kStatFilename);
 }
 
-// TODO: Read and return the command associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Command(int pid [[maybe_unused]]) { return string(); }
+string LinuxParser::UserByUID(int UID) {
+  string line, user, x;
+  int fileUid;
 
-// TODO: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Ram(int pid [[maybe_unused]]) { return string(); }
-
-// TODO: Read and return the user ID associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Uid(int pid [[maybe_unused]]) { return string(); }
-
-// TODO: Read and return the user associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::User(int pid [[maybe_unused]]) { return string(); }
-
-// TODO: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::UpTime(int pid [[maybe_unused]]) { return 0; }
+  std::ifstream filestream(ParserConsts::kPasswordPath);
+  if (filestream.is_open()) {
+    while (std::getline(filestream, line)) {
+      std::replace(line.begin(), line.end(), ':', ' ');
+      std::istringstream linestream(line);
+      while (linestream >> user >> x >> fileUid) {
+        if (fileUid == UID) {
+          return user;
+        }
+      }
+    }
+  }
+  return user;
+}

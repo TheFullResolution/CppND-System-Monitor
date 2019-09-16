@@ -13,7 +13,7 @@ using std::vector;
 
 namespace ParserHelper {
 template <typename T>
-T GetSimpleValue(string const &filter, string const &filename) {
+T GetValueByKey(string const &filter, string const &filename) {
   string line, key;
   T value;
 
@@ -27,6 +27,19 @@ T GetSimpleValue(string const &filter, string const &filename) {
         }
       }
     }
+  }
+  return value;
+};
+template <typename T>
+T GetValue(string const &filename) {
+  string line;
+  T value;
+
+  std::ifstream stream(ParserConsts::kProcDirectory + filename);
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    linestream >> value;
   }
   return value;
 };

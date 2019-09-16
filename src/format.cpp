@@ -1,6 +1,8 @@
 #include "format.h"
+#include <iomanip>
+#include <sstream>
 #include <string>
-
+#
 using std::string;
 using std::to_string;
 
@@ -21,4 +23,11 @@ string Format::ElapsedTime(long seconds) {
   sec = seconds;
 
   return Format(hour) + ':' + Format(min) + ':' + Format(sec);
+}
+
+string Format::KBisMB(float kb) {
+  double mb = kb / 1024;
+  std::stringstream mb_stream;
+  mb_stream << std::fixed << std::setprecision(2) << mb;
+  return mb_stream.str();
 }
