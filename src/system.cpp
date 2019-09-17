@@ -13,7 +13,6 @@ using std::vector;
 
 Processor& System::Cpu() { return cpu_; }
 
-// TODO: Return a container composed of the system's processes
 All_Processes& System::Processes() { return processes_; }
 
 string System::Kernel() { return string(LinuxParser::Kernel()); }

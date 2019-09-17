@@ -8,14 +8,15 @@
 int main() {
   System system;
 
-  vector<Process>& stats = system.Processes().GetProcesses();
-
-  for (size_t i = 0; i < stats.size(); i++)
-  {
-    auto stuff = stats[i].CpuUtilization();
-    std::cout << "\n" << stuff;
-  }
+  // vector<Process>& stats = system.Processes().GetProcesses();
+  //   std::cout << "\n" << "START";
+  //   std::cout << "\n" << stats.size();
+  // for (size_t i = 0; i < stats.size(); i++)
+  // {
+  //   auto stuff = stats[i].CpuUtilization();
+  //   std::cout << "\n" << stuff;
+  // }
   
 
-  // NCursesDisplay::Display(system, 20);
+  NCursesDisplay::Display(system, 20);
 }

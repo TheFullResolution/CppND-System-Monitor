@@ -12,7 +12,10 @@ bool compareProcesses(Process& p1, Process& p2) {
   return (p1.RawRam() > p2.RawRam());
 };
 
-All_Processes::All_Processes() { Hertz = sysconf(_SC_CLK_TCK); }
+All_Processes::All_Processes() {
+  Hertz = sysconf(_SC_CLK_TCK);
+  CreateProcesses();
+}
 
 vector<int> All_Processes::ReadFolders() { return LinuxParser::Pids(); };
 
@@ -26,14 +29,11 @@ void All_Processes::CreateProcesses() {
 
     allProcesses.push_back(process);
   }
-
+  sort(allProcesses.begin(), allProcesses.end(), compareProcesses);
   all_processes_ = allProcesses;
 }
 
 vector<Process>& All_Processes::GetProcesses() {
   CreateProcesses();
-
-  sort(all_processes_.begin(), all_processes_.end(), compareProcesses);
-
   return all_processes_;
 }

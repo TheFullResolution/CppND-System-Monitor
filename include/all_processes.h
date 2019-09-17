@@ -11,8 +11,8 @@ using std::vector;
 
 class All_Processes {
  private:
-  vector<int> ReadFolders();
   vector<Process> all_processes_;
+  vector<int> ReadFolders();
   void CreateProcesses();
 
  public:

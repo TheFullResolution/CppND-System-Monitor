@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <cctype>
 #include <iostream>
+#include <iterator>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -11,29 +12,19 @@
 #include "parser_helper.h"
 #include "process.h"
 
-using std::string;
-using std::to_string;
-using std::vector;
+using namespace std;
 
 Process::Process(int pid, long Hertz) : pid_(pid), Hertz_(Hertz) {
-  string line, skip;
-  float value;
-  vector<float> cpuNumbers;
-  std::ifstream stream(ParserConsts::kProcDirectory + to_string(pid_) +
-                       ParserConsts::kStatFilename);
-  if (stream.is_open()) {
-    std::getline(stream, line);
-    std::istringstream linestream(line);
-    linestream >> value >> skip >> skip;
-    while (linestream >> value) {
-      cpuNumbers.push_back(value);
-      if(to_string(pid_) == "2536") {
-        std::cout << "\n" << value;
-      }
-    }
-  }
 
-  cpuNumbers_ = cpuNumbers;
+      // std::cout << "\n pid-  " << pid_;
+  vector<string> cpuNumbers = ReadFile(pid);
+      // std::cout << "\n cpuNum" << cpuNumbers.size();
+
+  utime_ = stof(cpuNumbers[13]);
+  stime_ = stof(cpuNumbers[14]);
+  cutime_ = stof(cpuNumbers[15]);
+  cstime_ = stof(cpuNumbers[16]);
+  starttime_ = stof(cpuNumbers[21]);
 }
 
 int Process::Pid() { return pid_; }
@@ -41,16 +32,10 @@ int Process::Pid() { return pid_; }
 float Process::CpuUtilization() {
   float uptime = LinuxParser::UpTime();
 
-  float utime = cpuNumbers_[10];
-  float stime = cpuNumbers_[11];
-  float cutime = cpuNumbers_[12];
-  float cstime = cpuNumbers_[13];
-  float starttime = cpuNumbers_[18];
+  float total_time = utime_ + stime_ + cutime_ + cstime_;
 
-  float total_time = utime + stime + cutime + cstime;
-
-  float seconds = uptime - (starttime / Hertz_);
-  float cpu_usage = ((total_time / Hertz_) / seconds);
+  float seconds = uptime - (starttime_ / Hertz_);
+  float cpu_usage = (total_time / Hertz_) / seconds;
 
   return cpu_usage;
 }
@@ -73,8 +58,6 @@ string Process::Ram() {
   return Format::KBisMB(memInKB);
 }
 
-
-
 string Process::User() {
   int UID = ParserHelper::GetValueByKey<int>(
       ParserConsts::filterUID, to_string(pid_) + ParserConsts::kStatusFilename);
@@ -84,9 +67,21 @@ string Process::User() {
 }
 
 long int Process::UpTime() {
-  long starttime = cpuNumbers_[18];
   long uptime = LinuxParser::UpTime();
-  long seconds = uptime - (starttime / Hertz_);
+  long seconds = uptime - (starttime_ / Hertz_);
 
   return seconds;
 }
+
+vector<string> Process::ReadFile(int pid) {
+  string line, skip;
+
+  std::ifstream stream(ParserConsts::kProcDirectory + to_string(pid) +
+                       ParserConsts::kStatFilename);
+
+  getline(stream, line);
+  istringstream linestream(line);
+  istream_iterator<string> beg(linestream), end;
+  vector<string> cpuNumbers(beg, end);
+  return cpuNumbers;
+};

@@ -23,10 +23,14 @@ class Process {
   long int UpTime();
 
  private:
+  vector<string> ReadFile(int);
   int pid_;
-  vector<float> cpuNumbers_;
   long Hertz_;
-  float uptime_;
+  float utime_ = 0.0;
+  float stime_ = 0.0;
+  float cutime_ = 0.0;
+  float cstime_ = 0.0;
+  float starttime_ = 0.0;
 };
 
 #endif
