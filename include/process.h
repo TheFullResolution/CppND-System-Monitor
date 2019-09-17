@@ -2,25 +2,31 @@
 #define PROCESS_H
 
 #include <string>
+#include <vector>
+
+using std::string;
+using std::vector;
+
 /*
 Basic class for Process representation
 It contains relevant attributes as shown below
 */
 class Process {
  public:
-  Process(int, long&);
+  Process(int, long);
   int Pid();
-  std::string User();
-  std::string Command();
+  string User();
+  string Command();
   float CpuUtilization();
-  std::string Ram();
+  float RawRam();
+  string Ram();
   long int UpTime();
-  bool operator<(Process const& a) const;
 
-  // TODO: Declare any necessary private members
  private:
   int pid_;
-  long& Hertz_;
+  vector<float> cpuNumbers_;
+  long Hertz_;
+  float uptime_;
 };
 
 #endif

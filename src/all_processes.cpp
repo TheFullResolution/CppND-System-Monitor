@@ -2,18 +2,21 @@
 #include "linux_parser.h"
 #include "process.h"
 
+#include <unistd.h>
 #include <vector>
-#include <unistd.h>   
 
+using std::sort;
 using std::vector;
 
-All_Processes::All_Processes() {
-  Hertz = sysconf(_SC_CLK_TCK);
-}
+bool compareProcesses(Process& p1, Process& p2) {
+  return (p1.RawRam() > p2.RawRam());
+};
+
+All_Processes::All_Processes() { Hertz = sysconf(_SC_CLK_TCK); }
 
 vector<int> All_Processes::ReadFolders() { return LinuxParser::Pids(); };
 
-vector<Process> All_Processes::GetProcesses() {
+void All_Processes::CreateProcesses() {
   vector<int> allPids = ReadFolders();
 
   vector<Process> allProcesses;
@@ -24,5 +27,13 @@ vector<Process> All_Processes::GetProcesses() {
     allProcesses.push_back(process);
   }
 
-  return allProcesses;
+  all_processes_ = allProcesses;
+}
+
+vector<Process>& All_Processes::GetProcesses() {
+  CreateProcesses();
+
+  sort(all_processes_.begin(), all_processes_.end(), compareProcesses);
+
+  return all_processes_;
 }

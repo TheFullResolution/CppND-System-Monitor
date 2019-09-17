@@ -9,16 +9,16 @@
 using std::string;
 using std::vector;
 
-class All_Processes
-{
-private:
-   vector<int> ReadFolders();
-public:
-   All_Processes();
-   vector<Process> GetProcesses();
-   long Hertz;
+class All_Processes {
+ private:
+  vector<int> ReadFolders();
+  vector<Process> all_processes_;
+  void CreateProcesses();
 
+ public:
+  All_Processes();
+  vector<Process>& GetProcesses();
+  long Hertz;
 };
-
 
 #endif

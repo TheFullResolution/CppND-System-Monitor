@@ -22,12 +22,6 @@ string Kernel();
 string UserByUID(int);
 
 std::vector<string> CpuUtilization();
-
-long Jiffies();
-long ActiveJiffies();
-long ActiveJiffies(int pid);
-long IdleJiffies();
-
 };  // namespace LinuxParser
 
 #endif

@@ -15,16 +15,10 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-Process::Process(int pid, long& Hertz) : pid_(pid), Hertz_(Hertz) {}
-
-int Process::Pid() { return pid_; }
-
-float Process::CpuUtilization() {
+Process::Process(int pid, long Hertz) : pid_(pid), Hertz_(Hertz) {
   string line, skip;
   float value;
   vector<float> cpuNumbers;
-  float uptime = LinuxParser::UpTime();
-
   std::ifstream stream(ParserConsts::kProcDirectory + to_string(pid_) +
                        ParserConsts::kStatFilename);
   if (stream.is_open()) {
@@ -33,14 +27,25 @@ float Process::CpuUtilization() {
     linestream >> value >> skip >> skip;
     while (linestream >> value) {
       cpuNumbers.push_back(value);
+      if(to_string(pid_) == "2536") {
+        std::cout << "\n" << value;
+      }
     }
   }
 
-  float utime = cpuNumbers[10];
-  float stime = cpuNumbers[11];
-  float cutime = cpuNumbers[12];
-  float cstime = cpuNumbers[13];
-  float starttime = cpuNumbers[18];
+  cpuNumbers_ = cpuNumbers;
+}
+
+int Process::Pid() { return pid_; }
+
+float Process::CpuUtilization() {
+  float uptime = LinuxParser::UpTime();
+
+  float utime = cpuNumbers_[10];
+  float stime = cpuNumbers_[11];
+  float cutime = cpuNumbers_[12];
+  float cstime = cpuNumbers_[13];
+  float starttime = cpuNumbers_[18];
 
   float total_time = utime + stime + cutime + cstime;
 
@@ -56,14 +61,19 @@ string Process::Command() {
   return cmd;
 }
 
-// TODO: Return this process's memory utilization
-string Process::Ram() {
+float Process::RawRam() {
   float memInKB = ParserHelper::GetValueByKey<long>(
       ParserConsts::filterProcMem,
       to_string(pid_) + ParserConsts::kStatusFilename);
-
-  return Format::KBisMB(memInKB);;
+  return memInKB;
 }
+
+string Process::Ram() {
+  float memInKB = RawRam();
+  return Format::KBisMB(memInKB);
+}
+
+
 
 string Process::User() {
   int UID = ParserHelper::GetValueByKey<int>(
@@ -73,11 +83,10 @@ string Process::User() {
   return user;
 }
 
-// TODO: Return the age of this process (in seconds)
-long int Process::UpTime() { return 0; }
+long int Process::UpTime() {
+  long starttime = cpuNumbers_[18];
+  long uptime = LinuxParser::UpTime();
+  long seconds = uptime - (starttime / Hertz_);
 
-// TODO: Overload the "less than" comparison operator for Process objects
-// REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a [[maybe_unused]]) const {
-  return true;
+  return seconds;
 }
