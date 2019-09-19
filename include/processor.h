@@ -8,9 +8,6 @@ using std::string;
 using std::vector;
 
 class Processor {
- public:
-  float Utilization();
-
  private:
   int previdle;
   int previowait;
@@ -23,6 +20,9 @@ class Processor {
 
   void AssignPrevValues(vector<float>);
   vector<float> ReadFile();
+
+ public:
+  float Utilization();
 };
 
 #endif

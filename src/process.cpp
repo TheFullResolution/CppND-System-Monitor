@@ -15,10 +15,7 @@
 using namespace std;
 
 Process::Process(int pid, long Hertz) : pid_(pid), Hertz_(Hertz) {
-
-      // std::cout << "\n pid-  " << pid_;
   vector<string> cpuNumbers = ReadFile(pid);
-      // std::cout << "\n cpuNum" << cpuNumbers.size();
 
   utime_ = stof(cpuNumbers[13]);
   stime_ = stof(cpuNumbers[14]);
@@ -30,8 +27,7 @@ Process::Process(int pid, long Hertz) : pid_(pid), Hertz_(Hertz) {
 int Process::Pid() { return pid_; }
 
 float Process::CpuUtilization() {
-  float uptime = LinuxParser::UpTime();
-
+  long uptime = LinuxParser::UpTime();
   float total_time = utime_ + stime_ + cutime_ + cstime_;
 
   float seconds = uptime - (starttime_ / Hertz_);
@@ -47,7 +43,7 @@ string Process::Command() {
 }
 
 float Process::RawRam() {
-  float memInKB = ParserHelper::GetValueByKey<long>(
+  float memInKB = ParserHelper::GetValueByKey<float>(
       ParserConsts::filterProcMem,
       to_string(pid_) + ParserConsts::kStatusFilename);
   return memInKB;

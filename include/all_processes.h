@@ -11,14 +11,18 @@ using std::vector;
 
 class All_Processes {
  private:
+  long Hertz;
+  vector<int> current_pids_;
   vector<Process> all_processes_;
+
+  void UpdateProcesses();
+  void AddNewProcesses(bool&);
   vector<int> ReadFolders();
-  void CreateProcesses();
+  void RemoveFinishedProcesses(bool&);
 
  public:
   All_Processes();
   vector<Process>& GetProcesses();
-  long Hertz;
 };
 
 #endif
