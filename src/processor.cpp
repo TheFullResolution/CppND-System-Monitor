@@ -9,38 +9,38 @@
 using std::string;
 using std::vector;
 
-float Processor::Utilization() {
-  vector<float> values = ReadFile();
-  float user = values[0];
-  float nice = values[1];
-  float system = values[2];
-  float idle = values[3];
-  float iowait = values[4];
-  float irq = values[5];
-  float softirq = values[6];
-  float steal = values[7];
+double Processor::Utilization() {
+  vector<double> values = ReadFile();
+  double user = values[0];
+  double nice = values[1];
+  double system = values[2];
+  double idle = values[3];
+  double iowait = values[4];
+  double irq = values[5];
+  double softirq = values[6];
+  double steal = values[7];
 
-  float PrevIdle = previdle + previowait;
-  float Idle = idle + iowait;
+  double PrevIdle = previdle + previowait;
+  double Idle = idle + iowait;
 
-  float PrevNonIdle =
+  double PrevNonIdle =
       prevuser + prevnice + prevsystem + previrq + prevsoftirq + prevsteal;
-  float NonIdle = user + nice + system + irq + softirq + steal;
+  double NonIdle = user + nice + system + irq + softirq + steal;
 
-  float PrevTotal = PrevIdle + PrevNonIdle;
-  float Total = Idle + NonIdle;
+  double PrevTotal = PrevIdle + PrevNonIdle;
+  double Total = Idle + NonIdle;
 
-  float totald = Total - PrevTotal;
+  double totald = Total - PrevTotal;
 
-  float idled = Idle - PrevIdle;
+  double idled = Idle - PrevIdle;
 
-  float CPU_Percentage = (totald - idled) / totald;
+  double CPU_Percentage = (totald - idled) / totald;
 
   AssignPrevValues(values);
   return CPU_Percentage;
 }
 
-void Processor::AssignPrevValues(vector<float> newValues) {
+void Processor::AssignPrevValues(vector<double> newValues) {
   prevuser = newValues[0];
   prevnice = newValues[1];
   prevsystem = newValues[2];
@@ -51,10 +51,10 @@ void Processor::AssignPrevValues(vector<float> newValues) {
   prevsteal = newValues[7];
 }
 
-vector<float> Processor::ReadFile() {
+vector<double> Processor::ReadFile() {
   string line, key;
-  float value;
-  vector<float> cpuNumbers;
+  double value;
+  vector<double> cpuNumbers;
   std::ifstream stream(ParserConsts::kProcDirectory +
                        ParserConsts::kStatFilename);
   if (stream.is_open()) {
@@ -63,7 +63,7 @@ vector<float> Processor::ReadFile() {
       while (linestream >> key) {
         if (key == ParserConsts::filterCpu) {
           while (linestream >> value) {
-            cpuNumbers.push_back(value);
+            cpuNumbers.emplace_back(value);
           }
         }
       }

@@ -18,11 +18,11 @@ class Processor {
   int prevsoftirq;
   int prevsteal;
 
-  void AssignPrevValues(vector<float>);
-  vector<float> ReadFile();
+  void AssignPrevValues(vector<double>);
+  vector<double> ReadFile();
 
  public:
-  float Utilization();
+  double Utilization();
 };
 
 #endif

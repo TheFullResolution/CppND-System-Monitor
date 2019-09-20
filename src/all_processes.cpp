@@ -48,7 +48,7 @@ void All_Processes::AddNewProcesses(bool& changed) {
       changed = true;
       Process process(current_pids_[i], Hertz);
 
-      all_processes_.push_back(process);
+      all_processes_.emplace_back(process);
     }
   }
 }

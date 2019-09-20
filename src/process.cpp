@@ -26,12 +26,12 @@ Process::Process(int pid, long Hertz) : pid_(pid), Hertz_(Hertz) {
 
 int Process::Pid() { return pid_; }
 
-float Process::CpuUtilization() {
+double Process::CpuUtilization() {
   long uptime = LinuxParser::UpTime();
-  float total_time = utime_ + stime_ + cutime_ + cstime_;
+  double total_time = utime_ + stime_ + cutime_ + cstime_;
 
-  float seconds = uptime - (starttime_ / Hertz_);
-  float cpu_usage = (total_time / Hertz_) / seconds;
+  double seconds = uptime - (starttime_ / Hertz_);
+  double cpu_usage = (total_time / Hertz_) / seconds;
 
   return cpu_usage;
 }
@@ -39,6 +39,11 @@ float Process::CpuUtilization() {
 string Process::Command() {
   string cmd = ParserHelper::GetValue<string>(to_string(pid_) +
                                               ParserConsts::kCmdlineFilename);
+  size_t maxSize = 50;
+  if(cmd.size() > maxSize) {
+    cmd.resize(maxSize - 3);
+    cmd = cmd + "...";
+  }                                            
   return cmd;
 }
 

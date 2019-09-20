@@ -28,7 +28,7 @@ class Process {
   int Pid();
   string User();
   string Command();
-  float CpuUtilization();
+  double CpuUtilization();
   float RawRam();
   string Ram();
   long int UpTime();
